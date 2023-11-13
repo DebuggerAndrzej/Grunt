@@ -34,9 +34,41 @@ fn handle_events() -> io::Result<bool> {
 }
 
 fn ui(frame: &mut Frame) {
+    let main_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([Constraint::Length(1), Constraint::Min(0)])
+        .split(frame.size());
     frame.render_widget(
-        Paragraph::new("Hello World!")
-            .block(Block::default().title("Greeting").borders(Borders::ALL)),
-        frame.size(),
+        Block::new().title("Grunt - Jira tui logger"),
+        main_layout[0],
+    );
+
+    let inner_layout = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints([Constraint::Percentage(60), Constraint::Percentage(40)])
+        .split(main_layout[1]);
+
+    let right_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([Constraint::Min(0), Constraint::Length(1)])
+        .split(inner_layout[0]);
+    frame.render_widget(Block::default().title("Issues"), right_layout[0]);
+    frame.render_widget(
+        Paragraph::new("To show list of available commands press: ?"),
+        right_layout[1],
+    );
+    let left_layout = Layout::default()
+        .direction(Direction::Vertical)
+        .constraints([Constraint::Percentage(70), Constraint::Percentage(30)])
+        .split(inner_layout[1]);
+    frame.render_widget(
+        Block::default()
+            .borders(Borders::ALL)
+            .title("Selected issue Preview"),
+        left_layout[0],
+    );
+    frame.render_widget(
+        Block::default().borders(Borders::ALL).title("Logs"),
+        left_layout[1],
     );
 }
