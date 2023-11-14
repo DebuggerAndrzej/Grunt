@@ -36,7 +36,7 @@ fn handle_events() -> io::Result<bool> {
 fn ui(frame: &mut Frame) {
     let main_layout = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([Constraint::Length(1), Constraint::Min(0)])
+        .constraints([Constraint::Length(2), Constraint::Min(0)])
         .split(frame.size());
     frame.render_widget(
         Block::new().title("Grunt - Jira tui logger"),
@@ -48,16 +48,24 @@ fn ui(frame: &mut Frame) {
         .constraints([Constraint::Percentage(60), Constraint::Percentage(40)])
         .split(main_layout[1]);
 
-    let right_layout = Layout::default()
+    let left_layout = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([Constraint::Min(0), Constraint::Length(1)])
+        .constraints([
+            Constraint::Length(2),
+            Constraint::Min(0),
+            Constraint::Length(1),
+        ])
         .split(inner_layout[0]);
-    frame.render_widget(Block::default().title("Issues"), right_layout[0]);
+    frame.render_widget(
+        Paragraph::new("Logged today:       Queued for today: ").alignment(Alignment::Center),
+        left_layout[0],
+    );
+    frame.render_widget(Block::default().title("Issues: "), left_layout[1]);
     frame.render_widget(
         Paragraph::new("To show list of available commands press: ?"),
-        right_layout[1],
+        left_layout[2],
     );
-    let left_layout = Layout::default()
+    let right_layout = Layout::default()
         .direction(Direction::Vertical)
         .constraints([Constraint::Percentage(70), Constraint::Percentage(30)])
         .split(inner_layout[1]);
@@ -65,10 +73,10 @@ fn ui(frame: &mut Frame) {
         Block::default()
             .borders(Borders::ALL)
             .title("Selected issue Preview"),
-        left_layout[0],
+        right_layout[0],
     );
     frame.render_widget(
         Block::default().borders(Borders::ALL).title("Logs"),
-        left_layout[1],
+        right_layout[1],
     );
 }
